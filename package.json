@@ -6,6 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [
+    "angular",
+    "firebase",
+    "angularfire"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ryaino/angular-springfire.git"
