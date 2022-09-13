@@ -1,9 +1,14 @@
-import {AbstractFirestoreDocument} from "./AbstractFirestoreDocument";
-import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from "@angular/fire/compat/firestore";
-import { Observable, BehaviorSubject } from 'rxjs';
+import { AbstractFirestoreDocument } from "./AbstractFirestoreDocument";
+import {
+  AngularFirestore,
+  AngularFirestoreCollection,
+  AngularFirestoreDocument,
+} from "@angular/fire/compat/firestore";
+import { BehaviorSubject, Observable } from "rxjs";
 
-
-export abstract class AbstractFirestoreDocumentRepository<T extends AbstractFirestoreDocument> {
+export abstract class AbstractFirestoreDocumentRepository<
+  T extends AbstractFirestoreDocument
+> {
   private documentCollectionReference: AngularFirestoreCollection<T>;
 
   private readonly documentCollection$: Observable<T[]>;
@@ -22,7 +27,7 @@ export abstract class AbstractFirestoreDocumentRepository<T extends AbstractFire
   }
 
   getDocumentById(id: string): Observable<T | undefined> {
-    return this.afs.doc<T>(this.collectionName + '/' + id).valueChanges();
+    return this.afs.doc<T>(this.collectionName + "/" + id).valueChanges();
   }
 
   getCollection(): Observable<T[]> {
@@ -33,12 +38,19 @@ export abstract class AbstractFirestoreDocumentRepository<T extends AbstractFire
     return this.activeDocument$;
   }
 
+  getCollectionReference(): AngularFirestoreCollection<T> {
+    return this.documentCollectionReference;
+  }
+
   setActiveDocument(document: T): void {
     this.activeDocument$.next(document);
   }
 
   updateActiveDocument(document: T | undefined) {
     if (document) {
+      this._activeDocumentReference = this.afs.doc<T>(
+        this.collectionName + "/" + document.id
+      );
       this._activeDocumentReference?.update(document).then(() => {
         this.setActiveDocument(document);
       });
@@ -57,4 +69,6 @@ export abstract class AbstractFirestoreDocumentRepository<T extends AbstractFire
     this.setActiveDocument(document);
     return this.getActiveDocumentSubscription();
   }
+
+  abstract insertDocument(document: T): Promise<void>;
 }
